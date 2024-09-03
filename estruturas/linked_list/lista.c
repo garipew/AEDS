@@ -3,10 +3,10 @@
 #include <stdio.h>
 
 
-Item* criar_item(void* conteudo){
+Item* criar_item(void* conteudo, int idx){
 	Item* novo = malloc(sizeof(*novo));
 	novo->conteudo = conteudo;
-	novo->idx = 0;
+	novo->idx = idx;
 	novo->prox = NULL;
 
 	return novo;
@@ -26,7 +26,6 @@ Item* concat_item(Item* head, Item* novo){
 		atual = atual->prox;
 	}
 	atual->prox = novo;
-	novo->idx = atual->idx + 1;
 
 	return head;	
 }
@@ -46,12 +45,6 @@ Item* remover_item(Item* head, int idx){
 	Item* removido = atual->prox;
 	atual->prox = atual->prox->prox;
 	free(removido);
-	
-	atual = atual->prox;
-	while(atual != NULL){
-		atual->idx--;
-		atual = atual->prox;
-	}
 
 	return head;
 }

@@ -9,7 +9,7 @@ typedef struct item{
 } Item;
 
 
-Item* criar_item(void*);
+Item* criar_item(void*, int);
 Item* concat_item(Item*, Item*);
 Item* remover_item(Item*, int);
 Item* remover_primeiro(Item*);

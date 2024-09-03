@@ -3,8 +3,8 @@
 
 
 int main(){
-	Item* head = criar_item(NULL);
-	for(int i = 0; i < 10; i++){
+	Item* head = criar_item(NULL, 0);
+	for(int i = 1; i < 10; i++){
 		concat_item(head, criar_item(NULL));	
 	}
 

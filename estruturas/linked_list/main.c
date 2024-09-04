@@ -12,7 +12,7 @@ int main(){
 	}
 
 	escrever_lista(head);
-	head = insertion_sort(head, comparar);
+	head = selection_sort(head, comparar);
 	head = apagar_lista(head);
 	return 0;
 }

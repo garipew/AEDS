@@ -75,6 +75,22 @@ Item* encontrar_anterior(Item* head, int idx){
 }
 
 
+Item* encontrar_menor(Item* head){
+	if(head == NULL){
+		return head;
+	}
+	Item* atual = head;
+	Item* menor = atual;
+	while(atual->prox != NULL){
+		atual = atual->prox;
+		if(atual->idx < menor->idx){
+			menor = atual;
+		}
+	}
+	return menor;
+}
+
+
 Item* remover_item(Item* head, int idx){
 	if(head == NULL){
 		return head;

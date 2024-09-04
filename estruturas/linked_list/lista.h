@@ -17,5 +17,6 @@ Item* remover_ultimo(Item*);
 Item* encontrar_anterior(Item*, int);
 Item* criar_fila(Item*);
 void escrever_lista(Item*);
+Item* encontrar_menor(Item*);
 Item* apagar_lista(Item*);
 #endif

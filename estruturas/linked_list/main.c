@@ -5,10 +5,14 @@
 
 int main(){
 	Item* head = criar_item(NULL, 10);
+	Item* ultimo;
 	for(int i = 9; i > 0; i--){
-		head = insertion_sort(head, criar_item(NULL, i), comparar);
+		ultimo = criar_item(NULL, i);
+		head = concat_item(head, ultimo);
 	}
 
+	escrever_lista(head);
+	head = insertion_sort(head, comparar);
 	head = apagar_lista(head);
 	return 0;
 }

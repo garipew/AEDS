@@ -50,6 +50,32 @@ Item* remover_item(Item* head, int idx){
 }
 
 
+void escrever_lista(Item* head){
+	Item* i = head;
+	while(i != NULL){
+		printf("%d ", i->idx);
+		i = i->prox;
+	}
+	printf("\n");
+}
+
+
+/* encontrar_anterior(Item*, int)
+ * Retorna o item que aponta ao item com o idx solicitado,
+ * caso exista
+ */
+Item* encontrar_anterior(Item* head, int idx){
+	Item* anterior;
+	while(anterior->prox->idx != idx){
+		anterior = anterior->prox;
+		if(anterior == NULL){
+			return head->idx == idx ? head : NULL;
+		}
+	}
+	return anterior;
+}
+
+
 Item* remover_primeiro(Item* head){
 	if(head == NULL){
 		return head;
@@ -76,16 +102,6 @@ Item* remover_ultimo(Item* head){
 	free(atual->prox);
 	atual->prox = NULL;
 	return head;	
-}
-
-
-void escrever_lista(Item* head){
-	Item* i = head;
-	while(i != NULL){
-		printf("%d ", i->idx);
-		i = i->prox;
-	}
-	printf("\n");
 }
 
 

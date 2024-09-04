@@ -25,7 +25,6 @@ Vertice* adicionar_aresta(Vertice*, int, int, int);
 Vertice* remover_aresta(Vertice*, int, int); 
 Vertice* remover_vertice(Vertice*, int);
 Vertice* criar_vertice(Aresta*, int);
-Vertice* concat_vertice(Vertice*, Vertice*);
 void escrever_grafo(Vertice*);
 Vertice* apagar_grafo(Vertice*);
 #endif

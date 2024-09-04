@@ -1,3 +1,3 @@
-#include "../../../estruturas/bin_tree/C/arvore_binaria.h"
+#include "../../estruturas/bin_tree/arvore_binaria.h"
 
 void inverter_arvore(No* raiz);

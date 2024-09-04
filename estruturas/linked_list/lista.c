@@ -141,7 +141,6 @@ Item* remover_ultimo(Item* head){
 
 Item* apagar_lista(Item* head){
 	while(head != NULL){
-		escrever_lista(head);
 		head = remover_primeiro(head);
 	}
 	return NULL;

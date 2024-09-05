@@ -15,10 +15,10 @@ Item* criar_item(void* conteudo, int idx){
 
 Item* criar_fila(Item* head){
 	Item* atual = head;
-	Item* fila = concat_item(NULL, criar_item(NULL, atual->idx));
+	Item* fila = concat_item(NULL, criar_item(atual, atual->idx));
 	atual = atual->prox;
 	while(atual != NULL){
-		fila = concat_item(fila, criar_item(NULL, atual->idx));
+		fila = concat_item(fila, criar_item(atual, atual->idx));
 		atual = atual->prox;	
 	}
 	return fila;
@@ -53,25 +53,25 @@ void escrever_lista(Item* head){
 }
 
 
-/* encontrar_anterior(Item*, int)
- * Retorna o item que aponta ao item com o idx solicitado,
+/* encontrar_anterior(Item*, Item*)
+ * Retorna o item que aponta ao item passado como argumento,
  * caso exista
  */
-Item* encontrar_anterior(Item* head, int idx){
+Item* encontrar_anterior(Item* head, Item* buscado){
 	if(head == NULL){
 		return head;
 	}
 	Item* anterior = head;
-	if(anterior->idx == idx){
+	if(anterior == buscado){
 		return NULL;
 	}	
-	while(anterior->prox->idx != idx){
-		anterior = anterior->prox;
-		if(anterior == NULL){
-			return NULL;
+	while(anterior->prox != NULL){
+		if(anterior->prox == buscado){
+			return anterior;
 		}
+		anterior = anterior->prox;
 	}
-	return anterior;
+	return NULL;
 }
 
 

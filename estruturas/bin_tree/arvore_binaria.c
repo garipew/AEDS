@@ -298,7 +298,7 @@ No* encontrar_ultimo(No* head){
 }
 
 
-No* remover_heap(No* head){
+No* remover_heap(No* head, int(*compara)(No*, No*)){
 	if(head == NULL){
 		return head;
 	}
@@ -326,7 +326,7 @@ No* remover_heap(No* head){
 	apagar_arvore(removido);
 
 	// Heapfy (praying)
-	inicio = heapfy(inicio, minimo);
+	inicio = heapfy(inicio, compara);
 
 	return inicio;
 }

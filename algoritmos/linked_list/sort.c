@@ -3,8 +3,13 @@
 #include <stdio.h>
 
 
-int comparar(Item* a, Item* b){
+int comparar_max(Item* a, Item* b){
 	return (a != NULL) && (b != NULL)? a->idx > b->idx : 0;
+}
+
+
+int comparar_min(Item* a, Item* b){
+	return (a != NULL) && (b != NULL)? a->idx < b->idx : 0;
 }
 
 
@@ -73,7 +78,7 @@ Item* insertion_sort(Item* head, int(*compara)(Item*, Item*)){
 	Item *j = j_anterior == NULL ? inicio : j_anterior->prox;
 
 	while(j != NULL){
-		if(compara(j_anterior, j)){
+		if(compara(j, j_anterior)){
 			inicio = trocar_itens(inicio, j_anterior, j);
 			j_anterior = encontrar_anterior(inicio, j->idx);
 			continue;
@@ -90,6 +95,22 @@ Item* insertion_sort(Item* head, int(*compara)(Item*, Item*)){
 }
 
 
+Item* selecionar_item(Item* head, int(*compara)(Item*, Item*)){
+	if(head == NULL){
+		return head;
+	}
+	Item* selecionado = head;
+	Item* atual = head;
+	while(atual != NULL){
+		if(compara(atual, selecionado)){
+			selecionado = atual;
+		}
+		atual = atual->prox;
+	}
+	return selecionado;
+}
+
+
 Item* selection_sort(Item* head, int(*compara)(Item*, Item*)){
 	if(head == NULL){
 		return head;
@@ -97,11 +118,11 @@ Item* selection_sort(Item* head, int(*compara)(Item*, Item*)){
 	Item* inicio = head;
 	Item* atual = inicio;
 	Item* anterior;
-	Item* menor = encontrar_menor(atual);
+	Item* selecionado = selecionar_item(atual, compara);
 	
 	while(atual->prox != NULL){
-		inicio = mover_antes(inicio, menor, atual);
-		menor = encontrar_menor(atual);
+		inicio = mover_antes(inicio, selecionado, atual);
+		selecionado = selecionar_item(atual, compara);
 	}
 
 	return inicio;

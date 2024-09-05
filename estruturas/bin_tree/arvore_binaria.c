@@ -15,7 +15,7 @@ No* criar_no(void* dado, int idx){
 }
 
 
-No* inserir_nivel(No* head, No* novo, No* anterior){
+No* inserir_nivel(No* head, No* novo){
 	if(head == NULL){
 		return novo;
 	}
@@ -30,7 +30,6 @@ No* inserir_nivel(No* head, No* novo, No* anterior){
 			fila = concat_item(fila, criar_item(no_atual->esq, 0));
 		} else{
 			no_atual->esq = novo;
-			anterior = no_atual;
 			fila = apagar_lista(fila);
 			return inicio;
 		}
@@ -38,7 +37,6 @@ No* inserir_nivel(No* head, No* novo, No* anterior){
 			fila = concat_item(fila, criar_item(no_atual->dir, 0));
 		} else{
 			no_atual->dir = novo;
-			anterior = no_atual;
 			fila = apagar_lista(fila);
 			return inicio;
 		}
@@ -141,11 +139,10 @@ int maximo(No* a, No* b){
 
 
 No* inserir_heap(No* head, No* novo, int(*comp)(No*, No*)){
-	No* anterior = NULL;
-	No* inicio = inserir_nivel(head, novo, anterior);
+	No* inicio = inserir_nivel(head, novo);
 	No* nova_raiz;
 
-	anterior = encontrar_pai(inicio, novo);
+	No* anterior = encontrar_pai(inicio, novo);
 
 	while(comp(novo, anterior)){
 		anterior = encontrar_pai(inicio, novo);

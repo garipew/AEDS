@@ -9,7 +9,7 @@ typedef struct no {
 } No;
 
 No* criar_no(void*, int);
-No* inserir_nivel(No*, No*, No*);
+No* inserir_nivel(No*, No*);
 No* inserir_bst(No*, No*);
 int minimo(No*, No*);
 int maximo(No*, No*);

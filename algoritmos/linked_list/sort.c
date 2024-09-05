@@ -13,6 +13,38 @@ int comparar_min(Item* a, Item* b){
 }
 
 
+/* Item* tornar_anterior(Item* head, Item* a, Item* b)
+ * Move a para antes de b
+ * Mais eficiente que trocar a com anterior recursivamente ate trocar com b
+ */
+Item* tornar_anterior(Item* head, Item* a, Item* b){
+	if(a == NULL || head == NULL || b == NULL){
+		return head;
+	}
+	if(a == b){
+		return head;
+	}
+	Item* inicio = head;
+	Item* a_anterior = encontrar_anterior(inicio, a);
+	Item* b_anterior = encontrar_anterior(inicio, b);
+	
+	if(a_anterior != NULL){
+		a_anterior->prox = a->prox;
+	} else {
+		inicio = a->prox;
+	}
+
+	if(b_anterior != NULL){
+		b_anterior->prox = b_anterior != a ? a : b;
+	} else {
+		inicio = a;
+	}
+
+	a->prox = b;
+	return inicio;
+}
+
+
 Item* trocar_itens(Item* head, Item* a, Item* b){
 	if(a == NULL || head == NULL || b == NULL){
 		return head;
@@ -53,10 +85,14 @@ Item* insertion_sort(Item* head, int(*compara)(Item*, Item*)){
 
 	while(j != NULL){
 		if(compara(j, j_anterior)){
-			inicio = trocar_itens(inicio, j_anterior, j);
-			j_anterior = encontrar_anterior(inicio, j);
+			j_anterior = encontrar_anterior(inicio, j_anterior);
 			continue;
 		} 	
+		if(j_anterior == NULL){
+			inicio = tornar_anterior(inicio, j, inicio);
+		} else{
+			inicio = tornar_anterior(inicio, j, j_anterior->prox);
+		}
 		fila = remover_primeiro(fila);
 		if(fila == NULL){
 			break;
@@ -91,15 +127,14 @@ Item* selection_sort(Item* head, int(*compara)(Item*, Item*)){
 	}
 	Item* inicio = head;
 	Item* atual = inicio;
-	Item* anterior;
 	Item* selecionado = selecionar_item(atual, compara);
 	
 	while(atual->prox != NULL){
-		do{
-			anterior = encontrar_anterior(inicio, selecionado);
-			inicio = trocar_itens(inicio, anterior, selecionado);
-		} while(anterior != atual);
+		inicio = tornar_anterior(inicio, selecionado, atual);
 		selecionado = selecionar_item(atual, compara);
+		if(atual->prox == NULL){
+			break;
+		}
 		while(selecionado == atual){
 		// selecionado esta na posicao correta
 			atual = atual->prox;
@@ -124,7 +159,7 @@ Item* heap_sort(Item* head, int(*compara)(No*, No*)){
 	No* heap = criar_no(atual, atual->idx);
 	while(atual->prox != NULL){
 		atual = atual->prox;
-		heap = inserir_nivel(heap, criar_no(atual, atual->idx), NULL);
+		heap = inserir_nivel(heap, criar_no(atual, atual->idx));
 	}
 
 	heap = heapfy(heap, compara);

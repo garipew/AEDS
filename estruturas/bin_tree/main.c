@@ -5,10 +5,10 @@
 
 
 int main(){
-	No* raiz = inserir_heap(NULL, criar_no(10), minimo);
+	No* raiz = inserir_heap(NULL, criar_no(NULL, 10), minimo);
 
 	for(int i = 9; i > 0; i--){
-		raiz = inserir_heap(raiz, criar_no(i), minimo);
+		raiz = inserir_heap(raiz, criar_no(NULL, i), minimo);
 	}
 
 	escrever_arvore(raiz);

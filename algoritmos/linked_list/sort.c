@@ -108,3 +108,29 @@ Item* selection_sort(Item* head, int(*compara)(Item*, Item*)){
 }
 
 
+Item* heap_sort(Item* head, int(*compara)(No*, No*)){
+	if(head == NULL){
+		return head;
+	}	
+
+	Item* inicio = head;
+	Item* atual = inicio;
+	No* heap = inserir_heap(NULL, criar_no(atual, atual->idx), minimo);
+	while(atual->prox != NULL){
+		atual = atual->prox;
+		heap = inserir_heap(heap, criar_no(atual, atual->idx), minimo);
+	}
+
+	inicio = heap->dado;	
+	atual = inicio;
+	atual->prox = NULL;
+	heap = remover_heap(heap);
+	while(heap != NULL){
+		atual = heap->dado;
+		atual->prox = NULL;
+		inicio = concat_item(inicio, atual);
+		heap = remover_heap(heap);
+	}
+
+	return inicio;
+}

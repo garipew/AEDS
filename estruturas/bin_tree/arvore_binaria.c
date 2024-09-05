@@ -4,8 +4,9 @@
 #include <stdio.h>
 
 
-No* criar_no(int idx){
+No* criar_no(void* dado, int idx){
 	No* no = malloc(sizeof(*no));
+	no->dado = dado;
 	no->idx = idx;
 	no->esq = NULL;
 	no->dir = NULL;
@@ -50,6 +51,9 @@ No* inserir_nivel(No* head, No* novo, No* anterior){
 
 No* encontrar_pai(No* head, No* no){
 	if(head == NULL){
+		return NULL;
+	}
+	if(head == no){
 		return NULL;
 	}
 	int i = 0;
@@ -268,34 +272,57 @@ No* heapfy(No* head, int(*comp)(No*, No*)){
 }
 
 
+No* encontrar_ultimo(No* head){
+	if(head == NULL){
+		return head;
+	}
+	No* inicio = head;
+	Item* fila = criar_item(inicio, 0);
+	Item* fila_atual = fila;
+	No* no_atual;
+
+	while(fila_atual != NULL){
+		no_atual = (No*)fila_atual->conteudo;
+		if(no_atual->esq != NULL){
+			fila = concat_item(fila, criar_item(no_atual->esq, 0));
+		} 
+
+		if(no_atual->dir != NULL){
+			fila = concat_item(fila, criar_item(no_atual->dir, 0));
+		}
+		fila_atual = fila_atual->prox;
+	}
+
+	fila = apagar_lista(fila);
+	return no_atual;
+}
+
+
 No* remover_heap(No* head){
+	if(head == NULL){
+		return head;
+	}
 	No* inicio = head;
 	No* removido = inicio;
 
-	// Econtra o ultimo elemento da heap
-	No* ultimo = encontrar_pai(inicio, NULL);	
+	// Encontra o ultimo elemento da heap
+	No* ultimo = encontrar_ultimo(inicio);	
 	No* pai_removido = NULL;
-	if(ultimo->esq == NULL){
-		if(ultimo->dir != NULL){
-			pai_removido = ultimo;
-			ultimo = ultimo->dir;
-		}
-	}else{
-		pai_removido = ultimo;
-		ultimo = ultimo->esq;
-	}
-		 
+
 	// Troca ultimo elemento com a raiz
 	inicio = trocar_nos(inicio, inicio, ultimo);
 
 	// Corta ligações entre removido e a arvore
-	if(pai_removido == NULL){
-		pai_removido = encontrar_pai(inicio, removido);
+	pai_removido = encontrar_pai(inicio, removido);
+	if(pai_removido != NULL){
+		pai_removido->esq = pai_removido->esq == removido ? NULL : pai_removido->esq;
+		pai_removido->dir = pai_removido->dir == removido ? NULL : pai_removido->dir;
 	}
-	pai_removido->esq = pai_removido->esq == removido ? NULL : pai_removido->esq;
-	pai_removido->dir = pai_removido->dir == removido ? NULL : pai_removido->dir;
-
 	// Apaga o removido
+	if(inicio == removido){
+		apagar_arvore(removido);
+		return NULL;
+	}
 	apagar_arvore(removido);
 
 	// Heapfy (praying)

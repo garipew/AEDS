@@ -157,11 +157,10 @@ Item* heap_sort(Item* head, int(*compara)(No*, No*)){
 	Item* inicio = head;
 	Item* atual = inicio;
 	Item* inicio_heap = criar_item(criar_no(atual, atual->idx), atual->idx);
-	Item* ultimo_heap = inicio_heap;
 	Item* novo_heap = inicio_heap;
 	while(atual->prox != NULL){
 		atual = atual->prox;
-		novo_heap = inserir_nivel(novo_heap, &ultimo_heap, criar_no(atual, atual->idx));
+		novo_heap = inserir_nivel(novo_heap, criar_no(atual, atual->idx));
 	}
 
 

@@ -15,7 +15,7 @@ No* criar_no(void* dado, int idx){
 }
 
 
-Item* inserir_nivel(Item* head, Item** ultimo, No* novo){
+Item* inserir_nivel(Item* head, No* novo){
 	if(head == NULL){
 		return NULL;
 	}
@@ -26,14 +26,12 @@ Item* inserir_nivel(Item* head, Item** ultimo, No* novo){
 		no_atual = item_atual->conteudo;
 		if(no_atual->esq == NULL){
 			no_atual->esq = novo;	
-			*ultimo = criar_item(novo, novo->idx);
-			concat_item(head, *ultimo);
+			concat_item(head, criar_item(novo, novo->idx));
 			return item_atual;
 		}
 		if(no_atual->dir == NULL){
 			no_atual->dir = novo;
-			*ultimo = criar_item(novo, novo->idx);
-			concat_item(head, *ultimo);
+			concat_item(head, criar_item(novo, novo->idx));
 			return item_atual;
 		}
 		item_atual = item_atual->prox;

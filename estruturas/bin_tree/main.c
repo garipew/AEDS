@@ -5,23 +5,20 @@
 
 
 int main(){
-	No* raiz = inserir_heap(NULL, criar_no(NULL, 10), minimo);
+	Item* inicio = criar_item(criar_no(NULL, 0), 0);
+	Item* prox = inicio;
+
 
 	for(int i = 9; i > 0; i--){
-		raiz = inserir_heap(raiz, criar_no(NULL, i), minimo);
+		prox  = inserir_nivel(prox, criar_no(NULL, i));
 	}
 
-	escrever_arvore(raiz);
-
-	printf("Removendo raiz...\n");
-	raiz = remover_heap(raiz);
-	escrever_arvore(raiz);
-
-	printf("Removendo raiz...\n");
-	raiz = remover_heap(raiz);
-	escrever_arvore(raiz);
-
-	apagar_arvore(raiz);
+	inicio = full_heapfy(inicio, minimo);
+	escrever_lista(inicio);
+	while(inicio != NULL){
+		inicio = remover_heap(inicio, minimo);
+		escrever_lista(inicio);
+	}
 
 	return 0;
 }

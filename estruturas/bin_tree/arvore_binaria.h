@@ -1,6 +1,8 @@
 #ifndef BIN_TREE
 #define BIN_TREE
 
+#include "../linked_list/lista.h"
+
 typedef struct no {
 	void* dado;
 	int idx;
@@ -9,13 +11,14 @@ typedef struct no {
 } No;
 
 No* criar_no(void*, int);
-No* inserir_nivel(No*, No*);
+Item* inserir_nivel(Item*, Item**, No*);
 No* inserir_bst(No*, No*);
 int minimo(No*, No*);
 int maximo(No*, No*);
-No* heapfy(No*, int(*)(No*, No*));
-No* inserir_heap(No*, No*, int(*)(No*, No*));
-No* remover_heap(No*, int(*)(No*, No*));
+Item* heapfy(Item*, No*, int(*)(No*, No*));
+Item* full_heapfy(Item*, int(*)(No*, No*));
+Item* remover_heap(Item*, int(*)(No*, No*));
+Item* encontrar_No(Item*, No*);
 void escrever_arvore(No*);
 void apagar_arvore(No*);
 #endif

@@ -25,6 +25,20 @@ Item* criar_fila(Item* head){
 }
 
 
+Item* criar_copia(Item* head){
+	if(head == NULL){
+		return head;
+	}
+	Item* atual = head;
+	Item* cp = criar_item(atual->conteudo, atual->idx);
+	atual = atual->prox;
+	while(atual != NULL){
+		cp = concat_item(cp, criar_item(atual->conteudo, atual->idx));
+		atual = atual->prox;
+	}
+	return cp;
+}
+
 /* Item* concat_item(Item*, Item*);
  * Recebe dois itens e adiciona o segundo no fim da
  * sequencia de prox do primeiro
@@ -40,6 +54,15 @@ Item* concat_item(Item* head, Item* novo){
 	atual->prox = novo;
 
 	return head;	
+}
+
+
+Item* encontrar_ultimo_item(Item* head){
+	Item* atual = head;
+	while(atual->prox != NULL){
+		atual = atual->prox;
+	}
+	return atual;
 }
 
 
@@ -121,21 +144,24 @@ Item* remover_primeiro(Item* head){
 }
 
 
-Item* remover_ultimo(Item* head){
+void* remover_ultimo(Item* head){
 	if(head == NULL){
-		return head;
+		return NULL;
 	}
 	Item* atual = head;
+	void* conteudo;
 	if(atual->prox == NULL){
-		free(head);
-		return NULL;	
+		conteudo = atual->conteudo;
+		free(atual);
+		return conteudo;	
 	}
 	while(atual->prox->prox != NULL){
 		atual = atual->prox;
 	}
+	conteudo = atual->prox->conteudo;
 	free(atual->prox);
 	atual->prox = NULL;
-	return head;	
+	return conteudo;	
 }
 
 

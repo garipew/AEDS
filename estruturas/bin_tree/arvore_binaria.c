@@ -1,5 +1,5 @@
 #include "arvore_binaria.h"
-#include "../linked_list/lista.h"
+#include "../../algoritmos/linked_list/sort.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -15,68 +15,81 @@ No* criar_no(void* dado, int idx){
 }
 
 
-No* inserir_nivel(No* head, No* novo){
+Item* inserir_nivel(Item* head, Item** ultimo, No* novo){
 	if(head == NULL){
-		return novo;
+		return NULL;
+	}
+	Item* item_atual = head;
+	No* no_atual;
+	
+	while(item_atual != NULL){
+		no_atual = item_atual->conteudo;
+		if(no_atual->esq == NULL){
+			no_atual->esq = novo;	
+			*ultimo = criar_item(novo, novo->idx);
+			concat_item(head, *ultimo);
+			return item_atual;
+		}
+		if(no_atual->dir == NULL){
+			no_atual->dir = novo;
+			*ultimo = criar_item(novo, novo->idx);
+			concat_item(head, *ultimo);
+			return item_atual;
+		}
+		item_atual = item_atual->prox;
+	}
+	return head;
+}
+
+
+No* encontrar_ultimo(No* head, Item* fila, int salvar){
+	if(head == NULL){
+		return head;
 	}
 	No* inicio = head;
-	Item* fila = criar_item(inicio, 0);
-	Item* fila_atual = fila;
+	concat_item(fila, criar_item(inicio, inicio->idx));
+	Item* fila_atual = fila->prox;
 	No* no_atual;
 
 	while(fila_atual != NULL){
 		no_atual = (No*)fila_atual->conteudo;
 		if(no_atual->esq != NULL){
-			fila = concat_item(fila, criar_item(no_atual->esq, 0));
-		} else{
-			no_atual->esq = novo;
-			fila = apagar_lista(fila);
-			return inicio;
-		}
+			concat_item(fila, criar_item(no_atual->esq, no_atual->esq->idx));
+		} 
+
 		if(no_atual->dir != NULL){
-			fila = concat_item(fila, criar_item(no_atual->dir, 0));
-		} else{
-			no_atual->dir = novo;
-			fila = apagar_lista(fila);
-			return inicio;
+			concat_item(fila, criar_item(no_atual->dir, no_atual->dir->idx));
 		}
 		fila_atual = fila_atual->prox;
 	}
-	fila = apagar_lista(fila);
-	return inicio;
+
+	if(!salvar){
+		fila = apagar_lista(fila);
+	}
+	return no_atual;
 }
 
 
-No* encontrar_pai(No* head, No* no){
+No* encontrar_pai(Item* head, No* no){
 	if(head == NULL){
 		return NULL;
 	}
-	if(head == no){
+	if(head->conteudo == no){
 		return NULL;
 	}
-	int i = 0;
-	Item* fila = criar_item(head, i++);
-	Item* fila_atual = fila;
+	Item* atual = head;
 	No* no_atual;
-
-	while(fila_atual != NULL){
-		no_atual = (No*)fila_atual->conteudo;
-		if(no_atual->esq == no){
-			fila = apagar_lista(fila);
-			return no_atual;
-		} else if(no_atual->esq != NULL){
-			fila = concat_item(fila, criar_item(no_atual->esq, i++));
+	while(atual != NULL){
+		no_atual = atual->conteudo;
+		if(no_atual == NULL){
+			atual = atual->prox;
+			continue;
 		}
-		if(no_atual->dir == no){
-			fila = apagar_lista(fila);
-			return no_atual;
-		} else if(no_atual->dir != NULL) {
-			fila = concat_item(fila, criar_item(no_atual->dir, i++));
+		if(no_atual->esq == no || no_atual->dir == no){
+			return no_atual;	
 		}
-		fila_atual = fila_atual->prox;
+		atual = atual->prox;
 	}
-
-	fila = apagar_lista(fila);
 	return NULL;
 }
 
@@ -102,12 +115,27 @@ No* inserir_bst(No* no, No* raiz){
 }
 
 
-No* trocar_pai(No* head, No* pai, No* filho){
+Item* full_heapfy(Item* inicio, int(*)(No*, No*)){
+	Item* pilha = concat_item(criar_item(NULL, -1), criar_copia(inicio));
+	No* atual;
+	while(pilha->prox!=NULL){
+		atual = remover_ultimo(pilha);
+		if(atual == NULL){
+			break;
+		}
+		inicio = heapfy(inicio, atual, minimo);
+	}
+	apagar_lista(pilha);
+	return inicio;
+}
+
+
+Item* trocar_pai(Item* head, No* pai, No* filho){
 	if(head == NULL || pai == NULL || filho == NULL){
 		return head;	
 	}
 
-	No* inicio = head;
+	Item* inicio = head;
 	No* pai_anterior = encontrar_pai(inicio, pai);
 	No* pai_esq = pai->esq;
 	No* pai_dir = pai->dir;
@@ -115,15 +143,14 @@ No* trocar_pai(No* head, No* pai, No* filho){
 	if(pai_anterior != NULL){
 		pai_anterior->esq = pai_anterior->esq == pai ? filho : pai_anterior->esq;
 		pai_anterior->dir = pai_anterior->dir == pai ? filho : pai_anterior->dir;
-	} else{
-		inicio = filho;
-	}
+	} 
 
 	pai->esq = filho->esq;
 	pai->dir = filho->dir;
 	filho->esq = pai_esq == filho ? pai : pai_esq;
 	filho->dir = pai_dir == filho ? pai : pai_dir;
 
+	inicio = trocar_itens(inicio, encontrar_No(inicio, pai), encontrar_No(inicio, filho));
 	return inicio;
 }
 
@@ -138,20 +165,25 @@ int maximo(No* a, No* b){
 }
 
 
+/*
 No* inserir_heap(No* head, No* novo, int(*comp)(No*, No*)){
 	No* inicio = inserir_nivel(head, novo);
-	No* nova_raiz;
+	Item* pilha = criar_item(NULL, -1);
+	No* atual = encontrar_ultimo(head, pilha, 1);
 
-	No* anterior = encontrar_pai(inicio, novo);
+	pilha = remover_primeiro(pilha);
 
-	while(comp(novo, anterior)){
-		anterior = encontrar_pai(inicio, novo);
-		nova_raiz = trocar_pai(inicio, anterior, novo);
-		inicio = nova_raiz == NULL ? inicio : nova_raiz;
+	while(pilha != NULL){
+		atual = (No*)remover_ultimo(pilha);
+		if(atual == NULL){
+			break;
+		}
+		inicio = heapfy(inicio, atual, comp);
 	}
 
 	return inicio;
 }
+*/
 
 
 void pre_order(No* raiz){
@@ -197,12 +229,26 @@ void escrever_arvore(No* raiz){
 }
 
 
-No* trocar_nos(No* head, No* a, No* b){
+Item* encontrar_No(Item* head, No* buscado){
+	Item* atual = head;
+	No* no_atual;
+	while(atual != NULL){
+		no_atual = (No*)atual->conteudo;	
+		if(no_atual == buscado){
+			return atual;
+		}
+		atual = atual->prox;
+	}
+	return NULL;
+}
+
+
+Item* trocar_nos(Item* head, No* a, No* b){
 	if(head == NULL || a == NULL || b == NULL){
 		return head;	
 	}
 
-	No* inicio = head;
+	Item* inicio = head;
 	No* a_anterior = encontrar_pai(inicio, a);
 	No* b_anterior = encontrar_pai(inicio, b);
 	No* a_esq = a->esq;
@@ -211,15 +257,11 @@ No* trocar_nos(No* head, No* a, No* b){
 	if(a_anterior != NULL){
 		a_anterior->esq = a_anterior->esq == a ? b : a_anterior->esq;
 		a_anterior->dir = a_anterior->dir == a ? b : a_anterior->dir;
-	} else{
-		inicio = b;
-	}
+	} 
 
 	if(b_anterior != NULL){
 		b_anterior->esq = b_anterior->esq == b ? a : b_anterior->esq;
 		b_anterior->dir = b_anterior->dir == b ? a : b_anterior->dir;
-	} else{
-		inicio = a;
 	}
 
 	a->esq = b->esq == a ? b : b->esq;
@@ -227,24 +269,22 @@ No* trocar_nos(No* head, No* a, No* b){
 	b->esq = a_esq == b ? a : a_esq;
 	b->dir = a_dir == b ? a : a_dir;
 
+	inicio = trocar_itens(inicio, encontrar_No(head, a), encontrar_No(head, b));
 	return inicio;
 }
 
 
-No* heapfy(No* head, int(*comp)(No*, No*)){
-	if(head == NULL){
+Item* heapfy(Item* head, No* atual, int(*comp)(No*, No*)){
+	if(head == NULL || atual == NULL){
 		return head;
 	}
 
-	No* inicio = head;
-	No* atual = inicio;
-	No* escolhido = inicio;
-	if(inicio->esq == NULL && inicio->dir == NULL){
+	Item* inicio = head;
+	No* escolhido = atual;
+	if(atual->esq == NULL && atual->dir == NULL){
 		return inicio;
 	}
 
-	atual->esq = heapfy(atual->esq, comp);
-	atual->dir = heapfy(atual->dir, comp);
 	if(comp(atual->esq, escolhido)){
 		escolhido = atual->esq;
 	}
@@ -253,79 +293,49 @@ No* heapfy(No* head, int(*comp)(No*, No*)){
 		escolhido = atual->dir;
 	}
 
-	while(escolhido != atual){
+	if(escolhido != atual){
 		inicio = trocar_nos(inicio, atual, escolhido);
-		escolhido = atual;
-		if(comp(atual->esq, escolhido)){
-			escolhido = atual->esq;
-		}
-		
-		if(comp(atual->dir, escolhido)){
-			escolhido = atual->dir;
-		}
+		inicio = heapfy(inicio, atual, comp);
 	}
 
 	return inicio;
 }
 
 
-No* encontrar_ultimo(No* head){
+Item* remover_heap(Item* head, int(*compara)(No*, No*)){
 	if(head == NULL){
 		return head;
 	}
-	No* inicio = head;
-	Item* fila = criar_item(inicio, 0);
-	Item* fila_atual = fila;
-	No* no_atual;
-
-	while(fila_atual != NULL){
-		no_atual = (No*)fila_atual->conteudo;
-		if(no_atual->esq != NULL){
-			fila = concat_item(fila, criar_item(no_atual->esq, 0));
-		} 
-
-		if(no_atual->dir != NULL){
-			fila = concat_item(fila, criar_item(no_atual->dir, 0));
-		}
-		fila_atual = fila_atual->prox;
-	}
-
-	fila = apagar_lista(fila);
-	return no_atual;
-}
-
-
-No* remover_heap(No* head, int(*compara)(No*, No*)){
-	if(head == NULL){
-		return head;
-	}
-	No* inicio = head;
-	No* removido = inicio;
+	Item* inicio_heap = head;
+	No* removido = inicio_heap->conteudo;
+	No* atual = NULL;
 
 	// Encontra o ultimo elemento da heap
-	No* ultimo = encontrar_ultimo(inicio);	
+	No* ultimo = encontrar_ultimo_item(head)->conteudo;
 	No* pai_removido = NULL;
 
 	// Troca ultimo elemento com a raiz
-	inicio = trocar_nos(inicio, inicio, ultimo);
+	inicio_heap = trocar_nos(inicio_heap, inicio_heap->conteudo, ultimo);
 
 	// Corta ligações entre removido e a arvore
-	pai_removido = encontrar_pai(inicio, removido);
+	pai_removido = encontrar_pai(inicio_heap, removido);
 	if(pai_removido != NULL){
 		pai_removido->esq = pai_removido->esq == removido ? NULL : pai_removido->esq;
 		pai_removido->dir = pai_removido->dir == removido ? NULL : pai_removido->dir;
 	}
 	// Apaga o removido
-	if(inicio == removido){
+	if(inicio_heap->conteudo == removido){
 		apagar_arvore(removido);
+		remover_ultimo(inicio_heap);
 		return NULL;
 	}
 	apagar_arvore(removido);
-
+	remover_ultimo(inicio_heap);
+	
 	// Heapfy (praying)
-	inicio = heapfy(inicio, compara);
+	inicio_heap = heapfy(inicio_heap, inicio_heap->conteudo, minimo);
 
-	return inicio;
+	return inicio_heap;
 }
 
 

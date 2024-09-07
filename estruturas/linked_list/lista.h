@@ -6,19 +6,25 @@ typedef struct item{
 	void* conteudo;
 	int idx;
 	struct item* prox;
+	struct item* ant;
 } Item;
 
 
+typedef struct lista{
+	struct item* primeiro;
+	struct item* ultimo;
+} Lista;
+
+
+Lista* criar_lista();
+Lista* criar_fila(Lista*);
 Item* criar_item(void*, int);
-Item* concat_item(Item*, Item*);
-Item* remover_item(Item*, int);
-Item* remover_primeiro(Item*);
-void* remover_ultimo(Item*);
-Item* encontrar_anterior(Item*, Item*);
-Item* criar_fila(Item*);
-void escrever_lista(Item*);
-Item* encontrar_menor(Item*);
-Item* encontrar_ultimo_item(Item*);
-Item* criar_copia(Item*);
-Item* apagar_lista(Item*);
+Lista* criar_copia(Lista*);
+void concat_item(Lista*, Item*);
+void concat_lista(Lista*, Item*);
+void escrever_lista(Lista*);
+void* remover_item(Lista*, Item*);
+void* remover_primeiro(Lista*);
+void* remover_ultimo(Lista*);
+void apagar_lista(Lista*);
 #endif

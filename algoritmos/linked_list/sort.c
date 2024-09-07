@@ -13,95 +13,100 @@ int comparar_min(Item* a, Item* b){
 }
 
 
-/* Item* tornar_anterior(Item* head, Item* a, Item* b)
+/* void tornar_anterior(Lista* head, Item* a, Item* b)
  * Move a para antes de b
  * Mais eficiente que trocar a com anterior recursivamente ate trocar com b
  */
-Item* tornar_anterior(Item* head, Item* a, Item* b){
-	if(a == NULL || head == NULL || b == NULL){
-		return head;
+void tornar_anterior(Lista* head, Item* a, Item* b){
+	if(a == NULL || head == NULL || head->primeiro == NULL || b == NULL){
+		return;
 	}
-	if(a == b){
-		return head;
+	if(a == b || b->ant == a){
+		return;
 	}
-	Item* inicio = head;
-	Item* a_anterior = encontrar_anterior(inicio, a);
-	Item* b_anterior = encontrar_anterior(inicio, b);
-	
-	if(a_anterior != NULL){
-		a_anterior->prox = a->prox;
-	} else {
-		inicio = a->prox;
+	if(a == head->primeiro || b == head->primeiro){
+		return;
 	}
 
-	if(b_anterior != NULL){
-		b_anterior->prox = b_anterior != a ? a : b;
-	} else {
-		inicio = a;
+	if(a == head->ultimo){
+		head->ultimo = a->ant;
+	} else{
+		a->prox->ant = a->ant;
 	}
 
+	a->ant->prox = a->prox;
+
+	b->ant->prox = a;
+	a->ant = b->ant;
+	b->ant = a;
 	a->prox = b;
-	return inicio;
+	
+	return;
 }
 
 
-Item* trocar_itens(Item* head, Item* a, Item* b){
-	if(a == NULL || head == NULL || b == NULL){
-		return head;
+void trocar_itens(Lista* head, Item* a, Item* b){
+	if(a == NULL || head == NULL || head->primeiro == NULL || b == NULL){
+		return;
 	}
-	Item* inicio = head;
-	Item* a_anterior = encontrar_anterior(inicio, a);
-	Item* b_anterior = encontrar_anterior(inicio, b);
+	
 	Item* a_prox = a->prox;
+	Item* a_ant = a->ant;
+	Item* b_prox = b->prox;
+	Item* b_ant = b->ant;
 	
-	if(a_anterior != NULL){
-		a_anterior->prox = a_anterior != b ? b : a->prox;
-	} else {
-		inicio = b;
+	if(a == head->ultimo){
+		head->ultimo = b;
+	} else if(b == head->ultimo){
+		head->ultimo = a;
 	}
 
-	if(b_anterior != NULL){
-		b_anterior->prox = b_anterior != a ? a : b->prox;
-	} else {
-		inicio = a;
+	/* a e b */
+	a->prox = b->prox != a ? b->prox : b;
+	a->ant = b->ant != a ? b->ant : b;
+	b->prox = a_prox != b ? a_prox : a;
+	b->ant = a_ant != b ? a_ant : a;
+
+	/* vizinhos de a e b */
+	a_ant->prox = a_ant != b ? b : a_prox;
+	b_ant->prox = b_ant != a ? a : b_prox;
+	if(a_prox != NULL){
+		a_prox->ant = a_prox != b ? b : a_ant;
 	}
-
-	a->prox = b->prox == NULL ? b->prox : b->prox != a ? b->prox : b;
-	b->prox = a_prox == NULL ? a_prox : a_prox != b ? a_prox : a;
-
-	return inicio;
+	if(b_prox != NULL){
+		b_prox->ant = b_prox != a ? a: b_ant;
+	}
 }
 
 
-Item* insertion_sort(Item* head, int(*compara)(Item*, Item*)){
-	if(head == NULL){
-		return head;
+void insertion_sort(Lista* head, int(*compara)(Item*, Item*)){
+	if(head == NULL || head->primeiro == NULL){
+		return;
 	}
 	
-	Item *inicio = head;
-	Item *fila = criar_fila(inicio);
-	Item *j_anterior = encontrar_anterior(inicio, (Item*)fila->conteudo);
-	Item *j = j_anterior == NULL ? inicio : j_anterior->prox;
+	Lista *fila = criar_fila(head);
+	Item *primeiro_fila = remover_primeiro(fila);
+
+	Item *i = primeiro_fila;
+	Item *j = i->ant;
 
 	while(j != NULL){
-		if(compara(j, j_anterior)){
-			j_anterior = encontrar_anterior(inicio, j_anterior);
+		if(compara(i, j == head->primeiro ? NULL : j)){
+			j = j->ant;
 			continue;
 		} 	
-		if(j_anterior == NULL){
-			inicio = tornar_anterior(inicio, j, inicio);
-		} else{
-			inicio = tornar_anterior(inicio, j, j_anterior->prox);
+		
+		if(j->prox != i){
+			tornar_anterior(head, i, j->prox);
 		}
-		fila = remover_primeiro(fila);
-		if(fila == NULL){
+		if(fila->primeiro == fila->ultimo){
 			break;
 		}
-		j_anterior = encontrar_anterior(inicio, (Item*)fila->conteudo);
-		j = j_anterior == NULL ? inicio : j_anterior->prox;
+		primeiro_fila = remover_primeiro(fila);
+		i = primeiro_fila;
+		j = i->ant;
 	}
-
-	return inicio;
+	apagar_lista(fila);
 }
 
 
@@ -121,16 +126,15 @@ Item* selecionar_item(Item* head, int(*compara)(Item*, Item*)){
 }
 
 
-Item* selection_sort(Item* head, int(*compara)(Item*, Item*)){
+void selection_sort(Lista* head, int(*compara)(Item*, Item*)){
 	if(head == NULL){
-		return head;
+		return;
 	}
-	Item* inicio = head;
-	Item* atual = inicio;
+	Item* atual = head->primeiro->prox;
 	Item* selecionado = selecionar_item(atual, compara);
 	
 	while(atual->prox != NULL){
-		inicio = tornar_anterior(inicio, selecionado, atual);
+		tornar_anterior(head, selecionado, atual);
 		selecionado = selecionar_item(atual, compara);
 		if(atual->prox == NULL){
 			break;
@@ -144,42 +148,41 @@ Item* selection_sort(Item* head, int(*compara)(Item*, Item*)){
 			selecionado = selecionar_item(atual, compara);
 		}
 	}
-
-	return inicio;
 }
 
 
-Item* heap_sort(Item* head, int(*compara)(No*, No*)){
+void heap_sort(Lista* head, int(*compara)(No*, No*)){
 	if(head == NULL){
-		return head;
+		return;
 	}	
 
-	Item* inicio = head;
-	Item* atual = inicio;
-	Item* inicio_heap = criar_item(criar_no(atual, atual->idx), atual->idx);
-	Item* novo_heap = inicio_heap;
+	Item* atual = head->primeiro->prox;
+	Lista* heap = criar_lista();
+	concat_item(heap, criar_item(criar_no(atual, atual->idx), atual->idx));
 	while(atual->prox != NULL){
 		atual = atual->prox;
-		novo_heap = inserir_nivel(novo_heap, criar_no(atual, atual->idx));
+		inserir_nivel(heap, criar_no(atual, atual->idx));
 	}
 
+	full_heapfy(heap, compara);
 
-	inicio_heap = full_heapfy(inicio_heap, compara);
-
-	No* no_atual = inicio_heap->conteudo;
-	inicio = no_atual->dado; 
-	atual = inicio;
+	No* no_atual = heap->primeiro->prox->conteudo;
+	atual = no_atual->dado; 
 	atual->prox = NULL;
-	inicio_heap = remover_heap(inicio_heap, compara);
-	while(inicio_heap != NULL){
-		no_atual = inicio_heap->conteudo;
+	atual->ant = head->primeiro;
+	head->primeiro->prox = atual;
+	remover_heap(heap, compara);
+	while(heap->primeiro != heap->ultimo){
+		no_atual = heap->primeiro->prox->conteudo;
 		if(no_atual == NULL){
 			break;
 		}
-		atual = no_atual->dado;
+		((Item*)no_atual->dado)->ant = atual;
+		atual->prox = no_atual->dado;
+		atual = atual->prox;
 		atual->prox = NULL;
-		inicio = concat_item(inicio, atual);
-		inicio_heap = remover_heap(inicio_heap, compara);
+		head->ultimo = atual;
+		remover_heap(heap, compara);
 	}
-	return inicio;
+	apagar_lista(heap);
 }

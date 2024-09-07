@@ -5,20 +5,24 @@
 
 
 int main(){
-	Item* inicio = criar_item(criar_no(NULL, 0), 0);
-	Item* prox = inicio;
-
-
+	Lista* heap = criar_lista();
+	/*
+	No *a, *b;
+	a = criar_no(NULL, 30);
+	b = criar_no(NULL, 79);
+	inserir_nivel(heap, b);
+	*/
 	for(int i = 9; i > 0; i--){
-		prox  = inserir_nivel(prox, criar_no(NULL, i));
+		inserir_nivel(heap, criar_no(NULL, i));
 	}
 
-	inicio = full_heapfy(inicio, minimo);
-	escrever_lista(inicio);
-	while(inicio != NULL){
-		inicio = remover_heap(inicio, minimo);
-		escrever_lista(inicio);
+	escrever_lista(heap);
+	full_heapfy(heap, minimo);
+	escrever_lista(heap);
+	while(heap->primeiro != heap->ultimo){
+		remover_heap(heap, minimo);
+		escrever_lista(heap);
 	}
-
+	apagar_lista(heap);
 	return 0;
 }

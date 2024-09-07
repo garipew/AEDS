@@ -6,8 +6,9 @@
 
 int comparar_min(Item*, Item*);
 int comparar_max(Item*, Item*);
-Item* trocar_itens(Item*, Item*, Item*);
-Item* insertion_sort(Item*, int(*)(Item*, Item*));
-Item* selection_sort(Item*, int(*)(Item*, Item*));
-Item* heap_sort(Item*, int(*)(No*, No*));
+void trocar_itens(Lista*, Item*, Item*);
+void tornar_anterior(Lista*, Item*, Item*);
+void insertion_sort(Lista*, int(*)(Item*, Item*));
+void selection_sort(Lista*, int(*)(Item*, Item*));
+void heap_sort(Lista*, int(*)(No*, No*));
 #endif

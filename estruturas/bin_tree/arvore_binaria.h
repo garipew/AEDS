@@ -11,14 +11,15 @@ typedef struct no {
 } No;
 
 No* criar_no(void*, int);
-Item* inserir_nivel(Item*, No*);
+Item* inserir_nivel(Lista*, No*);
 No* inserir_bst(No*, No*);
 int minimo(No*, No*);
 int maximo(No*, No*);
-Item* heapfy(Item*, No*, int(*)(No*, No*));
-Item* full_heapfy(Item*, int(*)(No*, No*));
-Item* remover_heap(Item*, int(*)(No*, No*));
-Item* encontrar_No(Item*, No*);
+void heapfy(Lista*, No*, int(*)(No*, No*));
+void full_heapfy(Lista*, int(*)(No*, No*));
+void remover_heap(Lista*, int(*)(No*, No*));
+Item* encontrar_No(Lista*, No*);
+void trocar_nos(Lista*, No*, No*);
 void escrever_arvore(No*);
 void apagar_arvore(No*);
 #endif

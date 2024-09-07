@@ -11,30 +11,29 @@ int stoi(char* string);
 
 int main(int argc, char* argv[]){
 	srand(time(NULL));
+	Lista* l = criar_lista();
 	int wid, hei;
 	wid = argc >= 2 ? stoi(argv[1]) : 100;
 	hei = argc >= 3 ? stoi(argv[2]) : 10000;
-	Item* head = criar_item(NULL, rand()%hei);
 	for(int i = 1; i < wid; i++){
-		head = concat_item(head, criar_item(NULL, rand()%hei));
+		concat_item(l, criar_item(NULL, rand()%hei));
+		//concat_item(l, criar_item(NULL, i));
 	}
 
-	escrever_lista(head);
-
-	head = heap_sort(head, minimo);
+	escrever_lista(l);
+	heap_sort(l, maximo);
 	printf("Heap sort: ");
-	escrever_lista(head);
-
+	escrever_lista(l);
 	/*
-	head = insertion_sort(head, comparar_min);
+	insertion_sort(l, comparar_min);
 	printf("Insertion sort: ");
-	escrever_lista(head);
+	escrever_lista(l);
 
-	head = selection_sort(head, comparar_min);
+	selection_sort(l, comparar_max);
 	printf("Selection sort: ");
-	escrever_lista(head);
+	escrever_lista(l);
 	*/
-	head = apagar_lista(head);
+	apagar_lista(l);
 	return 0;
 }
 

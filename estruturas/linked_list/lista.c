@@ -3,71 +3,93 @@
 #include <stdio.h>
 
 
-Item* criar_item(void* conteudo, int idx){
-	Item* novo = malloc(sizeof(*novo));
-	novo->conteudo = conteudo;
-	novo->idx = idx;
-	novo->prox = NULL;
-
-	return novo;
+Lista* criar_lista(){
+	Lista* l = malloc(sizeof(*l));
+	l->primeiro = criar_item(NULL, -1);
+	l->ultimo = l->primeiro;
+	return l;
 }
 
 
-Item* criar_fila(Item* head){
-	Item* atual = head;
-	Item* fila = concat_item(NULL, criar_item(atual, atual->idx));
+Lista* criar_fila(Lista* head){
+	Item* atual = head->primeiro->prox;
+	Lista* fila = criar_lista();
+	concat_item(fila, criar_item(atual, atual->idx));
 	atual = atual->prox;
 	while(atual != NULL){
-		fila = concat_item(fila, criar_item(atual, atual->idx));
+		concat_item(fila, criar_item(atual, atual->idx));
 		atual = atual->prox;	
 	}
 	return fila;
 }
 
 
-Item* criar_copia(Item* head){
+Item* criar_item(void* conteudo, int idx){
+	Item* novo = malloc(sizeof(*novo));
+	novo->conteudo = conteudo;
+	novo->idx = idx;
+	novo->prox = NULL;
+	novo->ant = NULL;
+
+	return novo;
+}
+
+
+Lista* criar_copia(Lista* head){
 	if(head == NULL){
 		return head;
 	}
-	Item* atual = head;
-	Item* cp = criar_item(atual->conteudo, atual->idx);
+	Item* atual = head->primeiro->prox;
+	Lista* cp = criar_lista();
+	concat_item(cp, criar_item(atual->conteudo, atual->idx));
 	atual = atual->prox;
 	while(atual != NULL){
-		cp = concat_item(cp, criar_item(atual->conteudo, atual->idx));
+		concat_item(cp, criar_item(atual->conteudo, atual->idx));
 		atual = atual->prox;
 	}
 	return cp;
 }
 
-/* Item* concat_item(Item*, Item*);
- * Recebe dois itens e adiciona o segundo no fim da
- * sequencia de prox do primeiro
+
+/* void concat_item(Lista*, Item*);
+ * Adiciona item no fim da lista
  */
-Item* concat_item(Item* head, Item* novo){
+void concat_item(Lista* head, Item* novo){
 	if(head == NULL){
-		return novo;
+		return;
 	}
-	Item* atual = head;
-	while(atual->prox != NULL){
-		atual = atual->prox;
+	if(head->ultimo == head->primeiro){
+		head->primeiro->prox = novo;
 	}
-	atual->prox = novo;
-
-	return head;	
+	Item* ultimo = head->ultimo;
+	ultimo->prox = novo;
+	head->ultimo = novo;
+	novo->ant = ultimo;
 }
 
 
-Item* encontrar_ultimo_item(Item* head){
-	Item* atual = head;
-	while(atual->prox != NULL){
-		atual = atual->prox;
-	}
-	return atual;
+/* void concat_lista(Lista*, Item*)
+ * Adiciona item no inicio da lista
+*/
+void concat_lista(Lista* head, Item* novo){
+	if(head == NULL){
+		return;
+	}	
+	Item* primeiro = head->primeiro;
+
+	novo->prox = primeiro->prox;
+	novo->prox->ant = novo;
+
+	primeiro->prox = novo;
+	novo->ant = primeiro;
 }
 
 
-void escrever_lista(Item* head){
-	Item* i = head;
+void escrever_lista(Lista* head){
+	if(head == NULL || head->primeiro == NULL){
+		return;
+	}
+	Item* i = head->primeiro->prox;
 	while(i != NULL){
 		printf("%d ", i->idx);
 		i = i->prox;
@@ -76,98 +98,76 @@ void escrever_lista(Item* head){
 }
 
 
-/* encontrar_anterior(Item*, Item*)
- * Retorna o item que aponta ao item passado como argumento,
- * caso exista
- */
-Item* encontrar_anterior(Item* head, Item* buscado){
+void* remover_item(Lista* head, Item* item){
 	if(head == NULL){
-		return head;
-	}
-	Item* anterior = head;
-	if(anterior == buscado){
 		return NULL;
-	}	
-	while(anterior->prox != NULL){
-		if(anterior->prox == buscado){
-			return anterior;
-		}
-		anterior = anterior->prox;
-	}
-	return NULL;
-}
-
-
-Item* encontrar_menor(Item* head){
-	if(head == NULL){
-		return head;
-	}
-	Item* atual = head;
-	Item* menor = atual;
-	while(atual->prox != NULL){
-		atual = atual->prox;
-		if(atual->idx < menor->idx){
-			menor = atual;
-		}
-	}
-	return menor;
-}
-
-
-Item* remover_item(Item* head, int idx){
-	if(head == NULL){
-		return head;
 	}		
-	Item* atual = head;
-	while(atual->prox->idx != idx){
+	Item* atual = head->primeiro;
+	void* conteudo;
+	while(atual->prox != item){
 		atual = atual->prox;	
 		if(atual == NULL){
-			return head;
+			return NULL;
 		}
 	}
 	Item* removido = atual->prox;
-	atual->prox = atual->prox->prox;
+	conteudo = removido->conteudo;
+	atual->prox = removido->prox;
+	removido->prox->ant = atual;
 	free(removido);
 
-	return head;
+	return conteudo;
 }
 
 
-Item* remover_primeiro(Item* head){
-	if(head == NULL){
+void* remover_primeiro(Lista* head){
+	if(head == NULL || head->primeiro == NULL){
 		return head;
 	}
-	Item* removido = head;
-	Item* inicio = removido->prox;
+	Item* removido = head->primeiro->prox == NULL ? head->primeiro : head->primeiro->prox;
+	void* conteudo = removido->conteudo;
+	head->primeiro->prox = removido->prox;
+	if(removido != head->ultimo){
+		removido->prox->ant = head->primeiro;
+	} else{
+		head->ultimo = head->primeiro;
+		head->primeiro->prox = NULL;
+	}
 	free(removido);
-	return inicio;	
-}
-
-
-void* remover_ultimo(Item* head){
-	if(head == NULL){
-		return NULL;
-	}
-	Item* atual = head;
-	void* conteudo;
-	if(atual->prox == NULL){
-		conteudo = atual->conteudo;
-		free(atual);
-		return conteudo;	
-	}
-	while(atual->prox->prox != NULL){
-		atual = atual->prox;
-	}
-	conteudo = atual->prox->conteudo;
-	free(atual->prox);
-	atual->prox = NULL;
 	return conteudo;	
 }
 
 
-Item* apagar_lista(Item* head){
-	while(head != NULL){
-		head = remover_primeiro(head);
+void* remover_ultimo(Lista* head){
+	if(head == NULL){
+		return NULL;
 	}
-	return NULL;
+
+	Item* ultimo = head->ultimo;
+	if(ultimo == NULL){
+		return NULL;
+	}
+	void* conteudo = ultimo->conteudo;
+	if(ultimo == head->primeiro){
+		head->primeiro = NULL;
+	} else{
+		ultimo->ant->prox = NULL;
+	}
+	head->ultimo = ultimo->ant;
+	free(ultimo);
+	return conteudo;	
+}
+
+
+void apagar_lista(Lista* head){
+	if(head == NULL){
+		return;
+	}
+	while(head->primeiro->prox != NULL){
+		remover_ultimo(head);
+	}
+	if(head->primeiro!=NULL){
+		free(head->primeiro);
+	}
+	free(head);
 }

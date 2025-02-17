@@ -21,7 +21,7 @@ int main(int argc, char* argv[]){
 	}
 
 	escrever_lista(l);
-	heap_sort(l, maximo);
+	l = heapy_sort(l, min_heap);
 	printf("Heap sort: ");
 	escrever_lista(l);
 	/*

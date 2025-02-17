@@ -7,6 +7,7 @@ Lista* criar_lista(){
 	Lista* l = malloc(sizeof(*l));
 	l->primeiro = criar_item(NULL, -1);
 	l->ultimo = l->primeiro;
+	l->qtd = 0;
 	return l;
 }
 
@@ -51,6 +52,19 @@ Lista* criar_copia(Lista* head){
 }
 
 
+Item* copiar_item(Lista* l, int idx){
+	Item* atual = l->primeiro->prox;
+	Item* copia = NULL;
+	while((atual->prox != NULL) && (atual->idx != idx)){
+		atual = atual->prox;
+	}
+	if(atual->idx == idx){
+		copia = criar_item(atual->conteudo, idx);
+	}
+	return copia;
+}
+
+
 /* void concat_item(Lista*, Item*);
  * Adiciona item no fim da lista
  */
@@ -65,6 +79,7 @@ void concat_item(Lista* head, Item* novo){
 	ultimo->prox = novo;
 	head->ultimo = novo;
 	novo->ant = ultimo;
+	head->qtd++;
 }
 
 
@@ -82,6 +97,7 @@ void concat_lista(Lista* head, Item* novo){
 
 	primeiro->prox = novo;
 	novo->ant = primeiro;
+	head->qtd++;
 }
 
 
@@ -115,6 +131,7 @@ void* remover_item(Lista* head, Item* item){
 	atual->prox = removido->prox;
 	removido->prox->ant = atual;
 	free(removido);
+	head->qtd--;
 
 	return conteudo;
 }
@@ -134,6 +151,7 @@ void* remover_primeiro(Lista* head){
 		head->primeiro->prox = NULL;
 	}
 	free(removido);
+	head->qtd--;
 	return conteudo;	
 }
 
@@ -155,6 +173,7 @@ void* remover_ultimo(Lista* head){
 	}
 	head->ultimo = ultimo->ant;
 	free(ultimo);
+	head->qtd--;
 	return conteudo;	
 }
 

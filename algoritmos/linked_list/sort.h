@@ -3,6 +3,7 @@
 
 #include "../../estruturas/linked_list/lista.h"
 #include "../../estruturas/bin_tree/arvore_binaria.h"
+#include "../../estruturas/bin_tree/heap.h"
 
 int comparar_min(Item*, Item*);
 int comparar_max(Item*, Item*);
@@ -11,4 +12,5 @@ void tornar_anterior(Lista*, Item*, Item*);
 void insertion_sort(Lista*, int(*)(Item*, Item*));
 void selection_sort(Lista*, int(*)(Item*, Item*));
 void heap_sort(Lista*, int(*)(No*, No*));
+Lista* heapy_sort(Lista*, int(*)(int, int));
 #endif

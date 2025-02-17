@@ -13,6 +13,7 @@ typedef struct item{
 typedef struct lista{
 	struct item* primeiro;
 	struct item* ultimo;
+	int qtd;
 } Lista;
 
 
@@ -20,6 +21,7 @@ Lista* criar_lista();
 Lista* criar_fila(Lista*);
 Item* criar_item(void*, int);
 Lista* criar_copia(Lista*);
+Item* copiar_item(Lista*, int);
 void concat_item(Lista*, Item*);
 void concat_lista(Lista*, Item*);
 void escrever_lista(Lista*);

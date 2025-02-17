@@ -3,7 +3,7 @@
 #include "heap.h"
 
 
-Heap* criar_heap(size_t len){
+Heap* criar_heapy(size_t len){
 	Heap* h = malloc(sizeof(*h));
 	if(h==NULL){
 		printf("uh oh.\n");
@@ -21,7 +21,7 @@ Heap* criar_heap(size_t len){
 }
 
 
-void inserir_heap(Heap* h, int data){
+void inserir_heapy(Heap* h, int data){
 	if(h->len <= h->next){
 		printf("Heap is full...\n");
 		return;
@@ -41,7 +41,7 @@ int max_heap(int a, int b){
 }
 
 
-void heapfy(Heap* h, int idx, int (*comp)(int, int)){
+void heapyfy(Heap* h, int idx, int (*comp)(int, int)){
 	if(h->next < 2 || idx >= h->len){
 		return;
 	}
@@ -60,10 +60,10 @@ void heapfy(Heap* h, int idx, int (*comp)(int, int)){
 }
 
 
-void full_heapfy(Heap* h, int (*comp)(int, int)){
+void full_heapyfy(Heap* h, int (*comp)(int, int)){
 	int atual = ((h->next-1)/2);
 	while(atual >= 0){
-		heapfy(h, atual, comp);
+		heapyfy(h, atual, comp);
 		atual--;
 	}
 }
@@ -80,7 +80,7 @@ int remover_raiz(Heap* h){
 }
 
 
-void escrever_heap(Heap* h){
+void escrever_heapy(Heap* h){
 	for(int i = 0; i < h->next; i++){
 		printf("%d ", *(h->data + i));
 	}
@@ -88,7 +88,7 @@ void escrever_heap(Heap* h){
 }
 
 
-void apagar_heap(Heap* h){
+void apagar_heapy(Heap* h){
 	if(h){
 		if(h->data!=NULL){
 			free(h->data);

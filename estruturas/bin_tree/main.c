@@ -25,18 +25,18 @@ int main(){
 	}
 	apagar_lista(heap);
 	*/
-	Heap* heap = criar_heap(30);
+	Heap* heap = criar_heapy(30);
 	for(int i = 10; i > 0; i--){
-		inserir_heap(heap, i);
+		inserir_heapy(heap, i);
 	}
-	full_heapfy(heap, min_heap);
-	escrever_heap(heap);
-	while(heap->next > 0){
+	full_heapyfy(heap, min_heap);
+	escrever_heapy(heap);
+	while(heapy->next > 0){
 		printf("%d era o menor elemento da heap.\n", remover_raiz(heap));
-		full_heapfy(heap, min_heap);
+		full_heapyfy(heap, min_heap);
 	}
 
-	apagar_heap(heap);
+	apagar_heapy(heap);
 	
 	return 0;
 }

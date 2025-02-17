@@ -186,3 +186,23 @@ void heap_sort(Lista* head, int(*compara)(No*, No*)){
 	}
 	apagar_lista(heap);
 }
+
+
+Lista* heapy_sort(Lista* head, int(*comp)(int, int)){
+	Lista* ordenada = criar_lista();
+	Item* atual = head->primeiro->prox;	
+	Heap* heap = criar_heapy(head->qtd);
+	inserir_heapy(heap, atual->idx);
+	while(atual->prox != NULL){
+		atual=atual->prox;
+		inserir_heapy(heap, atual->idx);
+	}
+	full_heapyfy(heap, comp);
+	while(heap->next > 0){
+		concat_item(ordenada, copiar_item(head, remover_raiz(heap)));
+		full_heapyfy(heap, comp);
+	}
+	apagar_heapy(heap);
+	apagar_lista(head);
+	return ordenada;
+}

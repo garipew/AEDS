@@ -12,7 +12,6 @@ unsigned long long* pre_shift_and(const unsigned char* needle, size_t needle_len
 		return masks;
 	}
 	memset(masks, 0, sizeof(*masks)*size);
-	char* c;
 	for(int i = 0; i < needle_len; i++){
 		*(masks+*(needle+i)) += 1llu<<i;
 	}
@@ -22,7 +21,7 @@ unsigned long long* pre_shift_and(const unsigned char* needle, size_t needle_len
 
 int shift_and(const unsigned char* needle, const unsigned char* haystack, size_t needle_len, size_t haystack_len){
 	int count = 0;
-	unsigned int r = 0;
+	unsigned long long r = 0;
 	unsigned long long* masks = pre_shift_and(needle, needle_len);
 	if(masks == NULL){
 		printf("uh oh\n");

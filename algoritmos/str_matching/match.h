@@ -3,6 +3,6 @@
 
 #include <stddef.h>
 
-int shift_and(char*, char*, size_t, size_t);
-int kmp(char*, char*, size_t, size_t);
+int shift_and(const unsigned char*, const unsigned char*, size_t, size_t);
+int kmp(const unsigned char*, const unsigned char*, size_t, size_t);
 #endif

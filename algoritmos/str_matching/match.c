@@ -4,39 +4,33 @@
 #include "match.h"
 
 
-unsigned int* pre_shift_and(char* needle, size_t needle_len){
-	unsigned int *masks = malloc(sizeof(*masks)*needle_len);
+unsigned long long* pre_shift_and(const unsigned char* needle, size_t needle_len){
+	unsigned char size = ~0;
+	unsigned long long *masks = malloc(sizeof(*masks)*size);
 	if(masks == NULL){
 		printf("uh oh\n");
 		return masks;
 	}
-	memset(masks, 0, sizeof(*masks)*needle_len);
+	memset(masks, 0, sizeof(*masks)*size);
 	char* c;
 	for(int i = 0; i < needle_len; i++){
-		c = strchr(needle, *(needle+i));
-		*(masks+(c-needle)) += 1u<<i;
+		*(masks+*(needle+i)) += 1llu<<i;
 	}
 	return masks;
 }
 
 
-int shift_and(char* needle, char* haystack, size_t needle_len, size_t haystack_len){
+int shift_and(const unsigned char* needle, const unsigned char* haystack, size_t needle_len, size_t haystack_len){
 	int count = 0;
 	unsigned int r = 0;
-	unsigned int* masks = pre_shift_and(needle, needle_len);
+	unsigned long long* masks = pre_shift_and(needle, needle_len);
 	if(masks == NULL){
 		printf("uh oh\n");
 		return count;
 	}
-	char* src = NULL;
-	int index = -1;
 	for(int i = 0; i < haystack_len; i++){
-		if((src = strchr(needle, *(haystack+i)))){
-			index = src - needle;
-		}
-		r = ((r<<1) | 1u) & (index < 0 ? 0u : *(masks + index));
-		index = -1;
-		if(r & 1u<<needle_len-1){
+		r = ((r<<1) | 1llu) & *(masks +*(haystack+i));
+		if(r & 1llu<<needle_len-1){
 			count++;
 		}
 	}
@@ -45,7 +39,7 @@ int shift_and(char* needle, char* haystack, size_t needle_len, size_t haystack_l
 }
 
 
-int* pre_kmp(char* needle, size_t needle_len){
+int* pre_kmp(const unsigned char* needle, size_t needle_len){
 	int* lps = malloc(sizeof(*lps) * needle_len);
 	if(lps == NULL){
 		printf("uh oh.\n");
@@ -70,7 +64,7 @@ int* pre_kmp(char* needle, size_t needle_len){
 	return lps;
 }
 
-int kmp(char* needle, char* haystack, size_t needle_len, size_t haystack_len){
+int kmp(const unsigned char* needle, const unsigned char* haystack, size_t needle_len, size_t haystack_len){
 	int* lps = pre_kmp(needle, needle_len);	
 	int count = 0;
 	int i = 0, j = 0;

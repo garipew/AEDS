@@ -10,15 +10,25 @@ int main(int argc, char* argv[]){
 		return 1;
 	}
 	FILE* f = fopen(argv[1], "r");
+	if(f == NULL){
+		printf("File does not exist.\n");
+		return 1;
+	}
 	fseek(f, 0L, SEEK_END);
 	int lines_len = ftell(f);
-	char* lines = malloc(sizeof(*lines) * lines_len);
+	unsigned char* lines = malloc(sizeof(*lines) * lines_len);
 	memset(lines, 0, lines_len);
 	rewind(f);
-	char* needle = argv[2];
+	unsigned char* needle = argv[2];
 	int needle_len = strlen(argv[2]);
+	if(needle_len == 0){
+		printf("Can\'t search for empty pattern.\n");
+		fclose(f);
+		free(lines);
+		return 0;
+	}
 	int i = 0;
-	char c;
+	int c;
 	while((c = fgetc(f)) != EOF){
 		*(lines+i) = c;
 		i++;

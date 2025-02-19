@@ -21,7 +21,7 @@ Heap* criar_heapy(size_t len){
 }
 
 
-void inserir_heapy(Heap* h, int data){
+void inserir_heapy(Heap* h, Item* data){
 	if(h->len <= h->next){
 		printf("Heap is full...\n");
 		return;
@@ -41,11 +41,12 @@ int max_heap(int a, int b){
 }
 
 
-void heapyfy(Heap* h, int idx, int (*comp)(int, int)){
+void heapyfy(Heap* h, int idx, int (*comp)(Item*, Item*)){
 	if(h->next < 2 || idx >= h->len){
 		return;
 	}
 	int chosed = idx*2;
+	Item* aux;
 	if(chosed >= h->next){
 		return;
 	}
@@ -53,14 +54,14 @@ void heapyfy(Heap* h, int idx, int (*comp)(int, int)){
 		chosed = comp(*(h->data+chosed), *(h->data+chosed+1)) ? chosed : chosed+1;
 	}
 	if(comp(*(h->data+chosed), *(h->data+idx))){
-		*(h->data+chosed) ^= *(h->data+idx);
-		*(h->data+idx) ^= *(h->data+chosed);
-		*(h->data+chosed) ^= *(h->data+idx);
+		aux = *(h->data+chosed);
+		*(h->data+chosed) = *(h->data+idx);
+		*(h->data+idx) = aux;
 	}
 }
 
 
-void full_heapyfy(Heap* h, int (*comp)(int, int)){
+void full_heapyfy(Heap* h, int (*comp)(Item*, Item*)){
 	int atual = ((h->next-1)/2);
 	while(atual >= 0){
 		heapyfy(h, atual, comp);
@@ -69,11 +70,12 @@ void full_heapyfy(Heap* h, int (*comp)(int, int)){
 }
 
 
-int remover_raiz(Heap* h){
+Item* remover_raiz(Heap* h){
+	Item* aux;
 	if(h->next > 1){
-		*(h->data) ^= *(h->data+h->next-1);
-		*(h->data+h->next-1) ^= *(h->data);
-		*(h->data) ^= *(h->data+h->next-1);
+		aux = *(h->data);
+		*(h->data) = *(h->data+h->next-1);
+		*(h->data+h->next-1) = aux;
 	}
 	h->next--;
 	return *(h->data+h->next);

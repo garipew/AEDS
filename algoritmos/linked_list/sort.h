@@ -12,5 +12,5 @@ void tornar_anterior(Lista*, Item*, Item*);
 void insertion_sort(Lista*, int(*)(Item*, Item*));
 void selection_sort(Lista*, int(*)(Item*, Item*));
 void heap_sort(Lista*, int(*)(No*, No*));
-Lista* heapy_sort(Lista*, int(*)(int, int));
+void heapy_sort(Lista*, int(*)(Item*, Item*));
 #endif

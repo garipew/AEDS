@@ -6,12 +6,12 @@
 
 unsigned long long* pre_shift_and(const unsigned char* needle, size_t needle_len){
 	unsigned char size = ~0;
-	unsigned long long *masks = malloc(sizeof(*masks)*size);
+	unsigned long long *masks = malloc(sizeof(*masks)*(1+size));
 	if(masks == NULL){
 		printf("uh oh\n");
 		return masks;
 	}
-	memset(masks, 0, sizeof(*masks)*size);
+	memset(masks, 0, sizeof(*masks)*(size+1));
 	for(int i = 0; i < needle_len; i++){
 		*(masks+*(needle+i)) += 1llu<<i;
 	}

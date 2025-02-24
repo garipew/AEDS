@@ -43,36 +43,6 @@ Item* inserir_nivel(Lista* head, No* novo){
 }
 
 
-/*
-No* encontrar_ultimo(No* head, Item* fila, int salvar){
-	if(head == NULL){
-		return head;
-	}
-	No* inicio = head;
-	concat_item(fila, criar_item(inicio, inicio->idx));
-	Item* fila_atual = fila->prox;
-	No* no_atual;
-
-	while(fila_atual != NULL){
-		no_atual = (No*)fila_atual->conteudo;
-		if(no_atual->esq != NULL){
-			concat_item(fila, criar_item(no_atual->esq, no_atual->esq->idx));
-		} 
-
-		if(no_atual->dir != NULL){
-			concat_item(fila, criar_item(no_atual->dir, no_atual->dir->idx));
-		}
-		fila_atual = fila_atual->prox;
-	}
-
-	if(!salvar){
-		fila = apagar_lista(fila);
-	}
-	return no_atual;
-}
-*/
-
-
 No* encontrar_pai(Item* head, No* no){
 	if(head == NULL){
 		return NULL;
@@ -116,53 +86,6 @@ No* inserir_bst(No* no, No* raiz){
 		return inserir_bst(no, raiz->dir);
 	}
 }
-
-
-/*
-Item* trocar_pai(Item* head, No* pai, No* filho){
-	if(head == NULL || pai == NULL || filho == NULL){
-		return head;	
-	}
-
-	Item* inicio = head;
-	No* pai_anterior = encontrar_pai(inicio, pai);
-	No* pai_esq = pai->esq;
-	No* pai_dir = pai->dir;
-
-	if(pai_anterior != NULL){
-		pai_anterior->esq = pai_anterior->esq == pai ? filho : pai_anterior->esq;
-		pai_anterior->dir = pai_anterior->dir == pai ? filho : pai_anterior->dir;
-	} 
-
-	pai->esq = filho->esq;
-	pai->dir = filho->dir;
-	filho->esq = pai_esq == filho ? pai : pai_esq;
-	filho->dir = pai_dir == filho ? pai : pai_dir;
-
-	inicio = trocar_itens(inicio, encontrar_No(inicio, pai), encontrar_No(inicio, filho));
-	return inicio;
-}
-
-
-
-No* inserir_heap(No* head, No* novo, int(*comp)(No*, No*)){
-	No* inicio = inserir_nivel(head, novo);
-	Item* pilha = criar_item(NULL, -1);
-	No* atual = encontrar_ultimo(head, pilha, 1);
-
-	pilha = remover_primeiro(pilha);
-
-	while(pilha != NULL){
-		atual = (No*)remover_ultimo(pilha);
-		if(atual == NULL){
-			break;
-		}
-		inicio = heapfy(inicio, atual, comp);
-	}
-
-	return inicio;
-}
-*/
 
 
 int minimo(No* a, No* b){
@@ -215,6 +138,17 @@ void escrever_arvore(No* raiz){
 	printf("pos: ");
 	pos_order(raiz);
 	printf("\n");
+}
+
+
+int contar_nos(No* raiz){
+	if(raiz == NULL){
+		return 0;
+	}
+	int nos = 1;
+	nos+=contar_nos(raiz->esq);
+	nos+=contar_nos(raiz->dir);
+	return nos;
 }
 
 
@@ -356,6 +290,42 @@ void remover_heap(Lista* head, int(*compara)(No*, No*)){
 }
 
 
+// compara duas arvores e retorna a de menor profundidade
+No* encontrar_menor_arvore(No* a, No* b){
+	return contar_nos(a) < contar_nos(b) ? a : b;
+}
+
+
+// encontra e retorna a arvore de maior profundidade em um array de arvores
+No* encontrar_maior_arvore(No** array, size_t array_len){
+	No* maior = NULL;
+	No* atual;
+	for(int i = 0; i < array_len; i++){
+		atual = *(array+i);
+		if(atual == NULL){
+			break;
+		}
+		if(maior == NULL || contar_nos(maior) < contar_nos(atual)){
+			maior = atual;
+		}
+	}
+	return maior;
+}
+
+
+No* juntar_nos(No* a, No* b){
+	if(a == NULL){
+		return b;
+	} else if(b == NULL){
+		return a;
+	} 
+	No* raiz = criar_no(NULL, a->idx+b->idx);
+	raiz->esq = a;
+	raiz->dir = b;
+	return raiz;
+}
+
+
 void apagar_arvore(No* raiz){
 	if(raiz == NULL){
 		return;
@@ -363,4 +333,20 @@ void apagar_arvore(No* raiz){
 	apagar_arvore(raiz->esq);
 	apagar_arvore(raiz->dir);
 	free(raiz);
+	raiz = NULL;
+}
+
+
+void apagar_arvore_full(No* raiz){
+	if(raiz == NULL){
+		return;
+	}
+	apagar_arvore_full(raiz->esq);
+	apagar_arvore_full(raiz->dir);
+	if(raiz->dado != NULL){
+		free((No*)(raiz->dado));
+		raiz->dado = NULL;
+	}
+	free(raiz);
+	raiz = NULL;
 }

@@ -2,6 +2,7 @@
 #define BIN_TREE
 
 #include "../linked_list/lista.h"
+#include <stddef.h>
 
 typedef struct no {
 	void* dado;
@@ -22,4 +23,9 @@ Item* encontrar_No(Lista*, No*);
 void trocar_nos(Lista*, No*, No*);
 void escrever_arvore(No*);
 void apagar_arvore(No*);
+int contar_nos(No*);
+No* encontrar_menor_arvore(No*, No*);
+No* juntar_nos(No*, No*);
+void apagar_arvore_full(No*);
+No* encontrar_maior_arvore(No** array, size_t array_len);
 #endif

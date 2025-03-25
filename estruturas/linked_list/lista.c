@@ -182,10 +182,14 @@ void apagar_lista(Lista* head){
 	if(head == NULL){
 		return;
 	}
-	while(head->primeiro->prox != NULL){
-		remover_ultimo(head);
-	}
+	void* conteudo;
 	if(head->primeiro!=NULL){
+		while(head->primeiro->prox != NULL){
+			conteudo = remover_ultimo(head);
+			if(conteudo){
+				free(conteudo);
+			}
+		}
 		free(head->primeiro);
 	}
 	free(head);

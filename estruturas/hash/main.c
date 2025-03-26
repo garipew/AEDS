@@ -8,7 +8,9 @@ char* get_word(FILE* stream){
 	int count = 0;
 	char* word;
 	long start = ftell(stream);
-	while((c = getc(stream)) != EOF && c != ' '){
+	while((c = getc(stream)) != EOF && (c == '\n' || c == '\t')){ start++; }
+	ungetc(c, stream);
+	while((c = getc(stream)) != EOF && c != ' ' && c != '\n'){
 		count++;
 	}	
 	if(count == 0){
@@ -19,8 +21,11 @@ char* get_word(FILE* stream){
 	if(!word){
 		return word;
 	}
-	while((c = getc(stream)) != EOF && c != ' '){
+	while((c = getc(stream)) != EOF && c != ' ' && c != '\n'){
 		*word++ = c;
+	}
+	if(*(word-1) > 'z' || *(word-1) < 'A' || (*(word-1) > 'Z' && *(word-1) < 'a')){
+		*(word-1) = '\0';
 	}
 	*word = '\0';
 	return word-count;
@@ -44,7 +49,7 @@ int main(int argc, char* argv[]){
 	}
 	char* word;
 	while((word = get_word(f)) != NULL){
-		if(word && !install(h, word)){
+		if(!install(h, word)){
 			free(word);
 		}
 	}

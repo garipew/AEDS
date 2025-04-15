@@ -1,42 +1,22 @@
-//#include "arvore_binaria.h"
-//#include "../../algoritmos/bin_tree/invert.h"
+#include "arvore_binaria.h"
 #include <stdlib.h>
 #include <stdio.h>
+/*
 #include "heap.h"
+#include "../../algoritmos/bin_tree/invert.h"
+*/
 
 
 int main(){
-	/*
-	Lista* heap = criar_lista();
-	No *a, *b;
-	a = criar_no(NULL, 30);
-	b = criar_no(NULL, 79);
-	inserir_nivel(heap, b);
-	for(int i = 9; i > 0; i--){
-		inserir_nivel(heap, criar_no(NULL, i));
+	No* raiz = criar_no(NULL, 0);
+	for(int i = 1; i < 10; i++){
+		inserir_bst(criar_no(NULL, i), raiz);
 	}
+	escrever_arvore(raiz);
 
-	escrever_lista(heap);
-	full_heapfy(heap, minimo);
-	escrever_lista(heap);
-	while(heap->primeiro != heap->ultimo){
-		remover_heap(heap, minimo);
-		escrever_lista(heap);
-	}
-	apagar_lista(heap);
-	*/
-	Heap* heap = criar_heapy(30);
-	for(int i = 10; i > 0; i--){
-		inserir_heapy(heap, i);
-	}
-	full_heapyfy(heap, min_heap);
-	escrever_heapy(heap);
-	while(heapy->next > 0){
-		printf("%d era o menor elemento da heap.\n", remover_raiz(heap));
-		full_heapyfy(heap, min_heap);
-	}
+	No* found = bin_search(raiz, 7);
+	printf("%d\n", found->idx);
 
-	apagar_heapy(heap);
-	
+	apagar_arvore(raiz);
 	return 0;
 }

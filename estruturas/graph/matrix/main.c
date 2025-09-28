@@ -26,7 +26,7 @@ int main(int argc, char** argv){
 
 Grafo* read_input(){
 	char buffer[200];
-	int v1, v2;
+	int v1, v2, w;
 	fgets(buffer, 200, stdin);
 	int vertices, arestas;
 	sscanf(buffer, "%d %d", &vertices, &arestas);
@@ -36,8 +36,8 @@ Grafo* read_input(){
 		if(!fgets(buffer, 200, stdin)){
 			break;
 		}
-		sscanf(buffer, "%d %d", &v1, &v2);
-		inserir_aresta_nd(g, v1, v2, rand()%10);
+		sscanf(buffer, "%d %d %d", &v1, &v2, &w);
+		inserir_aresta_nd(g, v1, v2, w);
 	}	
 	printf("Grafo criado\n");
 	return g;

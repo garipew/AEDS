@@ -109,6 +109,8 @@ int* dijkstra(Grafo* g, int source){
 			dist[shortest.vertex] = shortest.distance;
 		}
 		for(int i = 0; i < g->vertices; i++){
+			// dist[i] == INT_MAX é uma otimização de memoria,
+			// não necessaria para a lógica do algoritmo
 			if(is_adjacent(g, i, shortest.vertex) && dist[i] == INT_MAX){
 				inserir_heap(q, i, dist[shortest.vertex]+g->adj[shortest.vertex][i]);
 			}

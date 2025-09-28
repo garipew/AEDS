@@ -99,7 +99,6 @@ int* dijkstra(Grafo* g, int source){
 	Pair shortest = {0};
 	dist[source] = 0;
 	inserir_heap(q, source, 0);
-	int remaining = g->vertices-1;
 	while(q->count > 0){
 		shortest = remover_heap(q);
 		if(shortest.vertex < 0){
@@ -110,7 +109,7 @@ int* dijkstra(Grafo* g, int source){
 			dist[shortest.vertex] = shortest.distance;
 		}
 		for(int i = 0; i < g->vertices; i++){
-			if(is_adjacent(g, shortest.vertex, i) && dist[i] == INT_MAX){
+			if(is_adjacent(g, i, shortest.vertex) && dist[i] == INT_MAX){
 				inserir_heap(q, i, dist[shortest.vertex]+g->adj[shortest.vertex][i]);
 			}
 		}

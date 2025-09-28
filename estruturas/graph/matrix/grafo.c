@@ -91,7 +91,7 @@ int is_adjacent(Grafo* g, int dst, int src){
 }
 
 int* dijkstra(Grafo* g, int source){
-	Heap* q = criar_heap((g->vertices*(g->vertices-1))/2);
+	Heap* q = criar_heap((g->vertices*(g->vertices-1)));
 	int *dist = malloc(sizeof(*dist)*(g->vertices));
 	for(int i = 0; i < g->vertices; i++){
 		dist[i] = INT_MAX;

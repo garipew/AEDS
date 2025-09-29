@@ -12,6 +12,9 @@ int main(int argc, char** argv){
 	Grafo* g = read_input();
 	print_grafo(g);
 	int source = rand()%g->vertices;
+	if(argc > 1){
+		source = atoi(argv[1]);
+	}
 	int* dist = dijkstra(g, source);
 
 	printf("As distancias, partindo de %d:\n", source);

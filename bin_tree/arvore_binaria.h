@@ -25,4 +25,5 @@ int minimo(No*, No*);
 int maximo(No*, No*);
 
 void apagar_arvore(No*);
+void inverter_arvore(No*);
 #endif

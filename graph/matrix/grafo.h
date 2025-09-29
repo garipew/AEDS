@@ -2,9 +2,9 @@
 #define GRAFO_H
 
 typedef struct grafo{
-	int** adj;
 	int vertices;
 	int arestas;
+	int* adj;
 }	Grafo;
 
 Grafo* criar_grafo(int);

@@ -9,20 +9,27 @@
 	fprintf(stderr, msg); \
 	exit(1)
 
-#define get_block_size(struct_ptr, buff_type, n) \
-	sizeof(*struct_ptr)+((n)*sizeof(buff_type))+_Alignof(buff_type)-1
-
-#define get_aligned_offset(struct_ptr, buff_type) \
-	((sizeof(*struct_ptr)+_Alignof(buff_type)-1) & ~(_Alignof(buff_type)-1))
+#define get_aligned_offset(offset, buff_type) \
+	(((offset)+_Alignof(buff_type)-1) & ~(_Alignof(buff_type)-1))
 
 Grafo* criar_grafo(int vertices){
 	Grafo* g;
-	g = calloc(1, get_block_size(g, int, vertices*vertices));
+	int* matrix;
+	size_t total_size, matrix_offset;
+	size_t rows_offset = get_aligned_offset(sizeof(*g), int*);
+	total_size=rows_offset+vertices*sizeof(int*);
+	matrix_offset=get_aligned_offset(total_size, int);
+	total_size=matrix_offset+vertices*vertices*sizeof(int);
+	g = calloc(1, total_size);
 	if(!g){
 		panic("calloc fail");
 	}
 	g->vertices = vertices;
-	g->adj = (void*)((char*)g+get_aligned_offset(g, int));
+	g->adj = (void*)((char*)g+rows_offset);
+	matrix = (void*)((char*)g+matrix_offset);
+	for(int i = 0; i < vertices; i++){
+		g->adj[i] = matrix + i * vertices;
+	}
 	return g;
 }
 
@@ -30,7 +37,7 @@ void inserir_aresta(Grafo* g, int dst, int src, int peso){
 	if(dst >= g->vertices || src >= g->vertices){
 		return;
 	}
-	g->adj[src + dst*g->vertices] = peso;
+	g->adj[src][dst] = peso;
 	g->arestas++;
 }
 
@@ -38,19 +45,19 @@ void inserir_aresta_nd(Grafo* g, int dst, int src, int peso){
 	if(dst >= g->vertices || src >= g->vertices){
 		return;
 	}
-	g->adj[src + dst*g->vertices] = peso;
-	g->adj[dst+src*g->vertices] = peso;
+	g->adj[src][dst] = peso;
+	g->adj[dst][src] = peso;
 	g->arestas++;
 }
 
 void apagar_aresta(Grafo* g, int dst, int src){
-	g->adj[src + dst*g->vertices] = 0;
+	g->adj[src][dst] = 0;
 	g->arestas = g->arestas > 0 ? --g->arestas : 0;
 }
 
 void apagar_aresta_nd(Grafo* g, int dst, int src){
-	g->adj[src + dst*g->vertices] = 0;
-	g->adj[dst+src*g->vertices] = 0;
+	g->adj[src][dst] = 0;
+	g->adj[dst][src] = 0;
 	g->arestas = g->arestas > 0 ? --g->arestas : 0;
 }
 
@@ -65,20 +72,14 @@ void print_grafo(Grafo* g){
 			if(j == 0){
 				printf("%d ", i);
 			}
-			printf("%d ", g->adj[i + j*g->vertices]);
+			printf("%d ", g->adj[i][j]);
 		}
 		printf("\n");
 	}
 }
 
-void apagar_grafo(Grafo* g){
-	if(g){
-		free(g);
-	}
-}
-
 int is_adjacent(Grafo* g, int dst, int src){
-	return g->adj[src + dst*g->vertices] > 0;
+	return g->adj[src][dst] > 0;
 }
 
 int* dijkstra(Grafo* g, int source){
@@ -103,7 +104,7 @@ int* dijkstra(Grafo* g, int source){
 			// dist[i] == INT_MAX é uma otimização de memoria,
 			// não necessaria para a lógica do algoritmo
 			if(is_adjacent(g, i, shortest.vertex) && dist[i] == INT_MAX){
-				inserir_heap(q, i, dist[shortest.vertex]+g->adj[shortest.vertex+i*g->vertices]);
+				inserir_heap(q, i, dist[shortest.vertex]+g->adj[shortest.vertex][i]);
 			}
 		}
 	}

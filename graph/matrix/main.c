@@ -10,7 +10,7 @@ Grafo* read_input();
 int main(int argc, char** argv){
 	srand(time(NULL));
 	Grafo* g = read_input();
-	print_grafo(g);
+//	print_grafo(g);
 	int source = rand()%g->vertices;
 	if(argc > 1){
 		source = atoi(argv[1]);
@@ -23,7 +23,7 @@ int main(int argc, char** argv){
 	}
 	printf("\n");
 	free(dist);
-	apagar_grafo(g);
+	free(g);
 	return 0;
 }
 
@@ -33,7 +33,7 @@ Grafo* read_input(){
 	fgets(buffer, 200, stdin);
 	int vertices, arestas;
 	sscanf(buffer, "%d %d", &vertices, &arestas);
-	printf("Criando um grafo com %d v e %d a\n", vertices, arestas);
+//	printf("Criando um grafo com %d v e %d a\n", vertices, arestas);
 	Grafo* g = criar_grafo(vertices);
 	for(int i = 0; i < arestas; i++){
 		if(!fgets(buffer, 200, stdin)){
@@ -42,6 +42,6 @@ Grafo* read_input(){
 		sscanf(buffer, "%d %d %d", &v1, &v2, &w);
 		inserir_aresta_nd(g, v1, v2, w);
 	}	
-	printf("Grafo criado\n");
+//	printf("Grafo criado\n");
 	return g;
 }

@@ -6,7 +6,7 @@
 #include <limits.h>
 
 #define panic(msg) \
-	fprintf(stderr, msg); \
+	perror(msg); \
 	exit(1)
 
 #define get_aligned_offset(offset, buff_type) \

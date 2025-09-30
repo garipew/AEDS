@@ -12,6 +12,16 @@
 #define get_aligned_offset(offset, buff_type) \
 	(((offset)+_Alignof(buff_type)-1) & ~(_Alignof(buff_type)-1))
 
+char to_human(size_t *size){
+	char multipliers[] = "\0KMGT";
+	int multiplier = 0;
+	while(*size >= 1000 && multiplier < 4){
+		*size/=1000;
+		multiplier++;
+	}
+	return multipliers[multiplier];
+}
+
 Grafo* criar_grafo(int vertices){
 	Grafo* g;
 	int* matrix;
@@ -21,6 +31,7 @@ Grafo* criar_grafo(int vertices){
 	matrix_offset=get_aligned_offset(total_size, int);
 	total_size=matrix_offset+vertices*vertices*sizeof(int);
 	g = calloc(1, total_size);
+	fprintf(stderr, "Asking for block of %zu%cB\n", total_size, to_human(&total_size));
 	if(!g){
 		panic("calloc fail");
 	}
@@ -52,13 +63,17 @@ void inserir_aresta_nd(Grafo* g, int dst, int src, int peso){
 
 void apagar_aresta(Grafo* g, int dst, int src){
 	g->adj[src][dst] = 0;
-	g->arestas = g->arestas > 0 ? --g->arestas : 0;
+	if(g->arestas > 0){
+		g->arestas--;
+	}
 }
 
 void apagar_aresta_nd(Grafo* g, int dst, int src){
 	g->adj[src][dst] = 0;
 	g->adj[dst][src] = 0;
-	g->arestas = g->arestas > 0 ? --g->arestas : 0;
+	if(g->arestas > 0){
+		g->arestas--;
+	}
 }
 
 void print_grafo(Grafo* g){

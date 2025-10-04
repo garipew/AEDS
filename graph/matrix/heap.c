@@ -2,20 +2,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define panic(msg) \
+	perror(msg); \
+	exit(1)
+
+#define get_aligned_offset(offset, buff_type) \
+	(((offset)+_Alignof(buff_type)-1) & ~(_Alignof(buff_type)-1))
+
 Heap* criar_heap(int size){
-	Heap* h = malloc(sizeof(*h));
+	Heap* h;
+	size_t total_size, nodes_offset;
+	nodes_offset = get_aligned_offset(sizeof(*h), Pair*);
+	total_size=nodes_offset+size*sizeof(*h->nodes);
+	h = calloc(1, total_size);
 	if(!h){
-		fprintf(stderr, "Uh-oh\n");
-		exit(1);
+		panic("calloc fail");
 	}
-	h->nodes = malloc(sizeof(*h->nodes)*size);
-	if(!h->nodes){
-		free(h);
-		fprintf(stderr, "Uh-oh\n");
-		exit(1);
-	}
+	h->nodes = (void*)((char*)h+nodes_offset);
 	h->size = size;
-	h->count = 0;
 	return h;
 }
 
@@ -108,14 +112,5 @@ void heapfy(Heap* h){
 			left = parent*2+1;
 			right = left+1;
 		}
-	}
-}
-
-void apagar_heap(Heap* h){
-	if(h){
-		if(h->nodes){
-			free(h->nodes);
-		}
-		free(h);
 	}
 }
